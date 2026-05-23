@@ -1,0 +1,57 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Documentation files - DO NOT UPLOAD TO GITHUB
+*_GUIDE.md
+*_SUMMARY.md
+CHANGELOG.md
+QUICK_START.md
+GIT_WORKFLOW.md
+GITIGNORE_GUIDE.md
+PROFILE_FEATURE_SUMMARY.md
+MARKETPLACE_LANDING_PAGE.md
+
+# Pages that are not part of authentication feature
+src/app/(public)/page.tsx
+src/app/(public)/about/
+src/app/(public)/courses/
+src/app/(public)/profile/
+src/app/(public)/seller/
+src/app/(seller)/
+src/app/(admin)/
