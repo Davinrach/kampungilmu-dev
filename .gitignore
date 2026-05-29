@@ -50,7 +50,7 @@ MARKETPLACE_LANDING_PAGE.md
 # Pages that are not part of authentication feature
 src/app/(public)/page.tsx
 src/app/(public)/about/
-src/app/(public)/courses/
+src/app/(public)/books/
 src/app/(public)/profile/
 src/app/(public)/seller/
 src/app/(seller)/

@@ -1,100 +1,98 @@
-// Utility functions untuk komunikasi dengan Golang backend
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-
-interface RequestOptions extends RequestInit {
-  params?: Record<string, string>;
-}
-
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public data?: any
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
+import axios from 'axios';
 
 /**
- * Helper function untuk melakukan HTTP request ke Golang backend
+ * Use Next.js API proxy to avoid CORS issues.
+ *
+ * Browser → localhost:3000/api/v1/* (same-origin, no CORS)
+ *           ↓ rewrite() in next.config.js
+ *           ↓
+ *        Next.js server → backend (ngrok URL)
+ *
+ * This way, the browser never directly calls the ngrok backend,
+ * eliminating CORS preflight issues entirely.
  */
-export async function apiRequest<T>(
-  endpoint: string,
-  options: RequestOptions = {}
-): Promise<T> {
-  const { params, ...fetchOptions } = options;
+const API_URL = '/api/v1';
 
-  // Build URL dengan query parameters jika ada
-  let url = `${API_BASE_URL}${endpoint}`;
-  if (params) {
-    const queryString = new URLSearchParams(params).toString();
-    url += `?${queryString}`;
-  }
-
-  // Default headers
-  const headers: HeadersInit = {
+// Create axios instance
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
     'Content-Type': 'application/json',
-    ...fetchOptions.headers,
-  };
+    // Still include ngrok bypass - it will be forwarded by Next.js proxy
+    'ngrok-skip-browser-warning': 'true',
+  },
+});
 
-  try {
-    const response = await fetch(url, {
-      ...fetchOptions,
-      headers,
-    });
+// Request interceptor - add auth token
+api.interceptors.request.use(
+  (config) => {
+    config.headers['ngrok-skip-browser-warning'] = 'true';
 
-    // Handle non-OK responses
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new ApiError(
-        errorData.message || `HTTP Error: ${response.status}`,
-        response.status,
-        errorData
-      );
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor - handle 401 with refresh token
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('refresh_token')
+            : null;
+
+        if (refreshToken) {
+          const response = await axios.post(
+            `${API_URL}/auth/refresh`,
+            { refresh_token: refreshToken },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+              },
+            }
+          );
+
+          const { access_token, refresh_token: newRefreshToken } =
+            response.data.data;
+
+          localStorage.setItem('access_token', access_token);
+          localStorage.setItem('refresh_token', newRefreshToken);
+
+          originalRequest.headers.Authorization = `Bearer ${access_token}`;
+          return api(originalRequest);
+        }
+      } catch (refreshError) {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+          if (
+            !window.location.pathname.startsWith('/login') &&
+            !window.location.pathname.startsWith('/register')
+          ) {
+            window.location.href = '/login';
+          }
+        }
+        return Promise.reject(refreshError);
+      }
     }
 
-    // Parse JSON response
-    const data = await response.json();
-    return data as T;
-  } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    throw new ApiError(
-      error instanceof Error ? error.message : 'Network error',
-      0
-    );
+    return Promise.reject(error);
   }
-}
+);
 
-// Convenience methods
-export const api = {
-  get: <T>(endpoint: string, options?: RequestOptions) =>
-    apiRequest<T>(endpoint, { ...options, method: 'GET' }),
-
-  post: <T>(endpoint: string, data?: any, options?: RequestOptions) =>
-    apiRequest<T>(endpoint, {
-      ...options,
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
-
-  put: <T>(endpoint: string, data?: any, options?: RequestOptions) =>
-    apiRequest<T>(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }),
-
-  patch: <T>(endpoint: string, data?: any, options?: RequestOptions) =>
-    apiRequest<T>(endpoint, {
-      ...options,
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    }),
-
-  delete: <T>(endpoint: string, options?: RequestOptions) =>
-    apiRequest<T>(endpoint, { ...options, method: 'DELETE' }),
-};
+export default api;
