@@ -206,11 +206,11 @@ export default function Navbar() {
                     {user.profile_photo ? (
                       <img
                         src={user.profile_photo}
-                        alt={user.name}
+                        alt={user.name || "User"}
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      user.name.charAt(0).toUpperCase()
+                      (user.name || "U").charAt(0).toUpperCase()
                     )}
                   </div>
                   <span className="hidden sm:block text-sm font-medium text-gray-700 max-w-[100px] truncate">
