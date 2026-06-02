@@ -102,13 +102,14 @@ function BooksPageContent() {
       book_type: (bookType as any) || undefined,
       sort,
       page,
-      limit: 25,
-      per_page: 25,
+      limit: 24,
+      per_page: 24,
     };
 
     catalogService
       .getBooks(filters)
       .then((res) => {
+        console.log("[Books Debug] total:", res.total, "totalPages:", res.total_pages, "limit:", res.limit, "page:", res.page, "booksCount:", res.data.length);
         setBooks(res.data);
         setTotal(res.total);
         setTotalPages(res.total_pages);
@@ -538,9 +539,8 @@ function Pagination({
   onPageChange: (page: number) => void;
 }) {
   const pages: (number | string)[] = [];
-  const maxVisible = 5;
 
-  if (totalPages <= maxVisible + 2) {
+  if (totalPages <= 7) {
     for (let i = 1; i <= totalPages; i++) pages.push(i);
   } else {
     pages.push(1);
@@ -553,39 +553,52 @@ function Pagination({
   }
 
   return (
-    <div className="mt-8 flex items-center justify-center gap-1 flex-wrap">
+    <div className="mt-10 flex items-center justify-center gap-2">
+      {/* Previous Button */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
       >
-        ← Sebelumnya
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Previous
       </button>
-      {pages.map((p, i) =>
-        typeof p === "number" ? (
-          <button
-            key={i}
-            onClick={() => onPageChange(p)}
-            className={`min-w-[40px] h-10 rounded-lg text-sm font-semibold transition ${
-              p === currentPage
-                ? "bg-teal-500 text-white shadow-md"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            {p}
-          </button>
-        ) : (
-          <span key={i} className="px-2 text-gray-400">
-            {p}
-          </span>
-        )
-      )}
+
+      {/* Page Numbers */}
+      <div className="flex items-center gap-1.5">
+        {pages.map((p, i) =>
+          typeof p === "number" ? (
+            <button
+              key={i}
+              onClick={() => onPageChange(p)}
+              className={`min-w-[40px] h-10 rounded-xl border text-sm font-semibold transition-all shadow-sm ${
+                p === currentPage
+                  ? "border-gray-900 bg-white text-gray-900 ring-2 ring-gray-900/10"
+                  : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+              }`}
+            >
+              {p}
+            </button>
+          ) : (
+            <span key={i} className="min-w-[40px] h-10 flex items-center justify-center text-sm text-gray-400">
+              {p}
+            </span>
+          )
+        )}
+      </div>
+
+      {/* Next Button */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
       >
-        Selanjutnya →
+        Next
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
       </button>
     </div>
   );

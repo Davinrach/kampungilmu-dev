@@ -115,30 +115,66 @@ const normalizePaginatedResponse = <T>(
   
   // Extract array from known keys or fallback to the data itself if it is an array
   let items: T[] = [];
-  let pagination: { current_page?: number; per_page?: number; total_items?: number; total_pages?: number } = {};
+  let pagination: { 
+    current_page?: number; 
+    per_page?: number; 
+    total_items?: number; 
+    total_pages?: number;
+    total?: number;
+    page?: number;
+    limit?: number;
+  } = {};
 
   if (Array.isArray(responseData)) {
     items = responseData;
+    // Check if top-level response has pagination info
+    const topLevel = response as any;
+    if (topLevel.pagination) pagination = topLevel.pagination;
+    else if (topLevel.meta) pagination = topLevel.meta;
   } else {
-    const obj = responseData as { books?: T[]; pagination?: typeof pagination; [key: string]: any };
+    const obj = responseData as { books?: T[]; data?: T[]; pagination?: typeof pagination; meta?: typeof pagination; [key: string]: any };
+    
+    // Try known data keys
     if (obj.books && Array.isArray(obj.books)) {
       items = obj.books;
+    } else if (obj.data && Array.isArray(obj.data)) {
+      items = obj.data;
     } else {
       // Try to find any array property
       const arrayValues = Object.values(obj).filter(Array.isArray) as T[][];
       if (arrayValues.length > 0) items = arrayValues[0];
     }
+    
+    // Try known pagination keys
     if (obj.pagination) {
       pagination = obj.pagination;
+    } else if (obj.meta) {
+      pagination = obj.meta;
+    } else {
+      // Some APIs put pagination fields at the data-object level
+      if (obj.total_pages !== undefined || obj.current_page !== undefined || obj.total_items !== undefined) {
+        pagination = {
+          total_pages: obj.total_pages,
+          current_page: obj.current_page,
+          total_items: obj.total_items,
+          per_page: obj.per_page,
+        };
+      }
     }
   }
 
+  const totalItems = pagination.total_items || pagination.total || items.length;
+  const perPage = pagination.per_page || pagination.limit || 20;
+  const currentPage = pagination.current_page || pagination.page || 1;
+  // Calculate total_pages ourselves if backend doesn't return it
+  const totalPages = pagination.total_pages || Math.ceil(totalItems / perPage) || 1;
+
   return {
     data: items,
-    total: pagination.total_items || items.length,
-    page: pagination.current_page || 1,
-    limit: pagination.per_page || 20,
-    total_pages: pagination.total_pages || 1,
+    total: totalItems,
+    page: currentPage,
+    limit: perPage,
+    total_pages: totalPages,
   };
 };
 
