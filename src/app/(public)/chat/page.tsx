@@ -248,7 +248,7 @@ function ChatPageContent() {
                         />
                       ) : (
                         <span className="text-white font-bold text-sm">
-                          {currentRoom.other_user_name.charAt(0).toUpperCase()}
+                          {(currentRoom.other_user_name || "U").charAt(0).toUpperCase()}
                         </span>
                       )}
                     </div>
@@ -406,8 +406,8 @@ function RoomItem({
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
-            <span className="text-white font-bold">
-              {room.other_user_name.charAt(0).toUpperCase()}
+            <span className="text-white font-bold text-sm">
+              {(room.other_user_name || "U").charAt(0).toUpperCase()}
             </span>
           )}
         </div>

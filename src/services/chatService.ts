@@ -43,90 +43,136 @@ interface UploadResponse {
   };
 }
 
+// ============== MOCK SYSTEM ==============
+const getMockRooms = (): ChatRoom[] => {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem('mock_chat_rooms');
+  return stored ? JSON.parse(stored) : [];
+};
+
+const saveMockRooms = (rooms: ChatRoom[]) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('mock_chat_rooms', JSON.stringify(rooms));
+  }
+};
+
+const getMockMessages = (roomId: string): ChatMessage[] => {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem(`mock_chat_messages_${roomId}`);
+  return stored ? JSON.parse(stored) : [];
+};
+
+const saveMockMessages = (roomId: string, messages: ChatMessage[]) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(`mock_chat_messages_${roomId}`, JSON.stringify(messages));
+  }
+};
+
 // ============== SERVICE ==============
 
 export const chatService = {
-  /**
-   * Get or create a chat room with a seller.
-   * POST /api/v1/chat/rooms
-   */
   getOrCreateRoom: async (sellerId: string): Promise<ChatRoom> => {
-    const response = await api.post<BackendResponse<ChatRoom>>('/chat/rooms', {
-      seller_id: sellerId,
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        let rooms = getMockRooms();
+        let room = rooms.find(r => r.other_user_id === sellerId);
+        
+        if (!room) {
+          room = {
+            id: `room-${sellerId}-${Date.now()}`,
+            other_user_id: sellerId,
+            other_user_name: "Toko Buku Penjual", // Fallback mock name
+            other_user_photo: "https://ui-avatars.com/api/?name=Toko+Buku&background=0D8ABC&color=fff",
+            last_message: "Halo! Ada yang bisa kami bantu?",
+            last_message_at: new Date().toISOString(),
+            unread_count: 1
+          };
+          rooms.unshift(room);
+          saveMockRooms(rooms);
+          
+          // Seed initial bot message
+          const welcomeMessage: ChatMessage = {
+            id: `msg-${Date.now()}`,
+            sender_id: sellerId,
+            content: "Halo Kak! Buku yang di etalase ready stock semua ya. Silakan langsung diorder!",
+            created_at: new Date().toISOString(),
+            is_me: false
+          };
+          saveMockMessages(room.id, [welcomeMessage]);
+        }
+        
+        resolve(room);
+      }, 500);
     });
-    return response.data.data;
   },
 
-  /**
-   * Get all chat rooms for the current user.
-   * GET /api/v1/chat/rooms
-   */
   getRooms: async (): Promise<ChatRoom[]> => {
-    const response = await api.get<BackendListResponse<ChatRoom>>('/chat/rooms');
-    const data = response.data?.data || response.data;
-    if (Array.isArray(data)) return data;
-    if (data && typeof data === 'object') {
-      const arrayValues = Object.values(data).filter(Array.isArray);
-      if (arrayValues.length > 0) return arrayValues[0];
-    }
-    return [];
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(getMockRooms());
+      }, 500);
+    });
   },
 
-  /**
-   * Get messages in a chat room.
-   * GET /api/v1/chat/rooms/:roomId/messages
-   */
   getMessages: async (roomId: string): Promise<ChatMessage[]> => {
-    const response = await api.get<BackendListResponse<ChatMessage>>(
-      `/chat/rooms/${roomId}/messages`
-    );
-    const data = response.data?.data || response.data;
-    if (Array.isArray(data)) return data;
-    if (data && typeof data === 'object') {
-      if (Array.isArray(data.messages)) return data.messages;
-      const arrayValues = Object.values(data).filter(Array.isArray);
-      if (arrayValues.length > 0) return arrayValues[0];
-    }
-    return [];
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Mark room as read
+        const rooms = getMockRooms();
+        const roomIndex = rooms.findIndex(r => r.id === roomId);
+        if (roomIndex !== -1) {
+          rooms[roomIndex].unread_count = 0;
+          saveMockRooms(rooms);
+        }
+        resolve(getMockMessages(roomId));
+      }, 300);
+    });
   },
 
-  /**
-   * Send a message in a chat room.
-   * POST /api/v1/chat/rooms/:roomId/messages
-   */
   sendMessage: async (
     roomId: string,
     data: { content?: string; photo_url?: string }
   ): Promise<ChatMessage> => {
-    const response = await api.post<BackendResponse<ChatMessage>>(
-      `/chat/rooms/${roomId}/messages`,
-      data
-    );
-    return response.data.data;
-  },
-
-  /**
-   * Upload a photo for chat message.
-   * POST /api/v1/upload
-   */
-  uploadPhoto: async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await api.post<UploadResponse>('/upload?folder=avatars', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const messages = getMockMessages(roomId);
+        const newMessage: ChatMessage = {
+          id: `msg-${Date.now()}`,
+          sender_id: "me", // Assuming current user
+          content: data.content || "",
+          photo_url: data.photo_url,
+          created_at: new Date().toISOString(),
+          is_me: true
+        };
+        messages.push(newMessage);
+        saveMockMessages(roomId, messages);
+        
+        // Update room last message
+        const rooms = getMockRooms();
+        const roomIndex = rooms.findIndex(r => r.id === roomId);
+        if (roomIndex !== -1) {
+          rooms[roomIndex].last_message = data.content || "Mengirim foto";
+          rooms[roomIndex].last_message_at = newMessage.created_at;
+          saveMockRooms(rooms);
+        }
+        
+        resolve(newMessage);
+      }, 500);
     });
-    return response.data.data.url;
   },
 
-  /**
-   * Get total unread message count across all rooms.
-   */
+  uploadPhoto: async (file: File): Promise<string> => {
+    // Mock upload by creating object URL (temporary)
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(URL.createObjectURL(file));
+      }, 1500);
+    });
+  },
+
   getTotalUnreadCount: async (): Promise<number> => {
     const rooms = await chatService.getRooms();
-    return rooms.reduce((total, room) => total + room.unread_count, 0);
+    return rooms.reduce((total, room) => total + (room.unread_count || 0), 0);
   },
 };
 
