@@ -168,7 +168,7 @@ function ReviewItem({ review }: { review: Review }) {
             />
           ) : (
             <span className="text-white font-bold text-sm">
-              {review.user_name.charAt(0).toUpperCase()}
+              {(review.user_name || "U").charAt(0).toUpperCase()}
             </span>
           )}
         </div>

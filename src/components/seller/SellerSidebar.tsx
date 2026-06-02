@@ -166,7 +166,7 @@ export default function SellerSidebar({ collapsed = false, onToggle }: SellerSid
                   className="w-full h-full object-cover"
                 />
               ) : (
-                user.name.charAt(0).toUpperCase()
+                (user.name || "S").charAt(0).toUpperCase()
               )}
             </div>
             <div className="flex-1 min-w-0">

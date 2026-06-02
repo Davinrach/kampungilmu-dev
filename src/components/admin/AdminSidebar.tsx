@@ -164,7 +164,7 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
                   className="w-full h-full object-cover"
                 />
               ) : (
-                user.name.charAt(0).toUpperCase()
+                (user.name || "A").charAt(0).toUpperCase()
               )}
             </div>
             <div className="flex-1 min-w-0">
