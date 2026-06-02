@@ -185,7 +185,9 @@ export const catalogService = {
   // Get categories
   getCategories: async (): Promise<BookCategory[]> => {
     const response = await api.get<BackendListResponse<BookCategory>>("/categories");
-    return response.data.data || [];
+    const data = response.data.data;
+    if (Array.isArray(data)) return data;
+    return [];
   },
 
   // Get popular searches from backend
