@@ -78,7 +78,7 @@ export interface BookFilters {
 export interface BackendListResponse<T> {
   success: boolean;
   message: string;
-  data: {
+  data: T[] | {
     books?: T[];
     pagination?: {
       current_page: number;
@@ -111,20 +111,27 @@ export interface PaginatedResponse<T> {
 const normalizePaginatedResponse = <T>(
   response: BackendListResponse<T>
 ): PaginatedResponse<T> => {
-  const responseData = response.data || {};
+  const responseData = response.data;
   
   // Extract array from known keys or fallback to the data itself if it is an array
   let items: T[] = [];
+  let pagination: { current_page?: number; per_page?: number; total_items?: number; total_pages?: number } = {};
+
   if (Array.isArray(responseData)) {
     items = responseData;
-  } else if (responseData.books && Array.isArray(responseData.books)) {
-    items = responseData.books;
   } else {
-    // Try to find any array property
-    const arrayValues = Object.values(responseData).filter(Array.isArray);
-    if (arrayValues.length > 0) items = arrayValues[0];
+    const obj = responseData as { books?: T[]; pagination?: typeof pagination; [key: string]: any };
+    if (obj.books && Array.isArray(obj.books)) {
+      items = obj.books;
+    } else {
+      // Try to find any array property
+      const arrayValues = Object.values(obj).filter(Array.isArray) as T[][];
+      if (arrayValues.length > 0) items = arrayValues[0];
+    }
+    if (obj.pagination) {
+      pagination = obj.pagination;
+    }
   }
-  const pagination = (!Array.isArray(responseData) && (responseData as any).pagination) ? (responseData as any).pagination : {};
 
   return {
     data: items,
