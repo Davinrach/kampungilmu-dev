@@ -501,7 +501,7 @@ export default function OrderDetailPage() {
                     )}
                     <div className="flex items-center justify-between mt-1">
                       <span className="text-xs text-gray-500">
-                        {item.quantity} × {formatPrice(item.price)}
+                        {item.quantity} × {formatPrice(item.price || (item as any).unit_price || (item.subtotal && item.quantity ? Math.round(item.subtotal / item.quantity) : 0))}
                       </span>
                       <span className="text-sm font-bold text-gray-900">
                         {formatPrice(item.subtotal)}
@@ -704,12 +704,12 @@ export default function OrderDetailPage() {
         />
       )}
 
-      {showDisputeModal && order.seller && (
+      {showDisputeModal && (
         <DisputeFormModal
           orderId={order.id}
           orderNumber={order.order_number}
-          sellerId={order.seller.id}
-          sellerName={order.seller.shop_name}
+          sellerId={order.seller?.id || (order as any).seller_id || "unknown"}
+          sellerName={order.seller?.shop_name || order.seller_name || "Seller"}
           onClose={handleCloseDispute}
         />
       )}

@@ -132,7 +132,7 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
 
   return (
     <aside
-      className={`bg-gradient-to-b from-teal-800 to-teal-900 text-white transition-all duration-300 flex flex-col ${
+      className={`h-screen bg-gradient-to-b from-teal-800 to-teal-900 text-white transition-all duration-300 flex flex-col ${
         collapsed ? "w-20" : "w-64"
       }`}
     >

@@ -134,7 +134,7 @@ export default function SellerSidebar({ collapsed = false, onToggle }: SellerSid
 
   return (
     <aside
-      className={`bg-gradient-to-b from-slate-800 to-slate-900 text-white transition-all duration-300 flex flex-col ${
+      className={`h-screen bg-gradient-to-b from-slate-800 to-slate-900 text-white transition-all duration-300 flex flex-col ${
         collapsed ? "w-20" : "w-64"
       }`}
     >

@@ -167,13 +167,12 @@ function BooksPageContent() {
                     <button
                       key={cat.id}
                       onClick={() => updateFilter("category", cat.slug)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition flex items-center gap-2 ${
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
                         category === cat.slug
                           ? "bg-teal-50 text-teal-700 font-semibold"
                           : "text-gray-600 hover:bg-gray-50"
                       }`}
                     >
-                      <span className="text-base">{getCategoryIcon(cat)}</span>
                       <span className="truncate">{cat.name}</span>
                     </button>
                   ))}

@@ -230,7 +230,11 @@ function OrderCard({
   const photo =
     firstItem?.cover_photo ||
     (firstItem?.book ? getPrimaryPhoto(firstItem.book) : PLACEHOLDER_IMAGE);
-  const itemPrice = firstItem?.price ?? 0;
+  
+  // Resilient price calculation in case API returns unit_price or doesn't return price
+  const itemPrice = firstItem?.price || (firstItem as any)?.unit_price || 
+    (firstItem?.subtotal && firstItem?.quantity ? Math.round(firstItem.subtotal / firstItem.quantity) : 0);
+    
   const orderTotal = order.total_amount ?? 0;
 
   const isShipped = order.status === "shipped" || order.status === "delivered";
