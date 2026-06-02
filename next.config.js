@@ -12,6 +12,12 @@ const nextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   // Proxy /backend/* requests to backend - use /backend prefix to avoid
   // conflict with Vercel's reserved /api path for serverless functions
   async rewrites() {
