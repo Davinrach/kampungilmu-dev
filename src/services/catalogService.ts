@@ -124,8 +124,7 @@ const normalizePaginatedResponse = <T>(
     const arrayValues = Object.values(responseData).filter(Array.isArray);
     if (arrayValues.length > 0) items = arrayValues[0];
   }
-
-  const pagination = responseData.pagination || {};
+  const pagination = (!Array.isArray(responseData) && (responseData as any).pagination) ? (responseData as any).pagination : {};
 
   return {
     data: items,
