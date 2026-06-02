@@ -60,7 +60,7 @@ export default function CompleteProfilePage() {
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
           <img
-            src="/Logo%20Kampung%20Ilmu%20White.jpg"
+            src="/Logo_Kampung_Ilmu_White-removebg-preview.png"
             alt="Kampung Ilmu Logo"
             className="h-16 w-auto object-contain rounded-xl shadow-sm"
           />

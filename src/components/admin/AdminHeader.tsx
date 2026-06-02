@@ -90,7 +90,7 @@ export default function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
               onClick={() => setShowProfile(!showProfile)}
               className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 transition"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm overflow-hidden">
+              <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-sm overflow-hidden">
                 {user?.profile_photo ? (
                   <img
                     src={user.profile_photo}
@@ -121,9 +121,9 @@ export default function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
             {/* Profile Dropdown */}
             {showProfile && (
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-indigo-500 to-purple-600">
+                <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-teal-500 to-cyan-600">
                   <p className="font-semibold text-white truncate">{user?.name}</p>
-                  <p className="text-xs text-indigo-200 truncate">
+                  <p className="text-xs text-teal-100 truncate">
                     {user?.email || user?.phone_number}
                   </p>
                 </div>

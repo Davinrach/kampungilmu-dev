@@ -227,7 +227,7 @@ function SellerOrdersContent() {
                           {item.title || "Buku"}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {item.quantity} × {formatPrice(item.price)}
+                          {item.quantity} × {formatPrice(item.price || (item.subtotal ? item.subtotal / (item.quantity || 1) : 0) || (item as any).unit_price || 0)}
                         </p>
                       </div>
                     </div>

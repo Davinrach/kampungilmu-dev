@@ -37,22 +37,22 @@ export default function AdminLayoutClient({ children }: AdminLayoutClientProps) 
 
   if (!hasHydrated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="animate-spin w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
 
   if (!isAuthenticated || user?.role !== "admin") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="animate-spin w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div

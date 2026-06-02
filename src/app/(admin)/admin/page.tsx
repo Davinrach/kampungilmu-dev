@@ -41,7 +41,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -49,16 +49,16 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-teal-600 to-cyan-700 rounded-2xl p-6 text-white shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold mb-1">Dashboard Admin 👋</h1>
-            <p className="text-indigo-200">
+            <h1 className="text-2xl font-bold mb-1">Dashboard Admin</h1>
+            <p className="text-teal-100">
               Selamat datang di panel administrasi Kampung Ilmu
             </p>
           </div>
           <div className="hidden sm:block text-right">
-            <p className="text-indigo-200 text-sm">Hari ini</p>
+            <p className="text-teal-100 text-sm">Hari ini</p>
             <p className="font-semibold">
               {new Date().toLocaleDateString("id-ID", {
                 weekday: "long",

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { bannerService, Banner } from "@/services/bannerService";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   catalogService,
@@ -34,6 +35,24 @@ function BooksPageContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [view, setView] = useState<ViewMode>("grid");
 
+  // Banner state
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  // Fetch banners
+  useEffect(() => {
+    bannerService.getPublicBanners().then(setBanners).catch(() => setBanners([]));
+  }, []);
+
+  // Auto-rotate banners
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % banners.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
+
   // Filter states (from URL)
   const search = searchParams.get("search") || "";
   const category = searchParams.get("category") || "";
@@ -66,18 +85,24 @@ function BooksPageContent() {
       .catch(() => setCategories([]));
   }, []);
 
-  // Fetch books when filters change
+  // Fetch books when filters change OR categories finish loading
   useEffect(() => {
+    // Wait until categories are loaded if we have a category filter
+    if (category && categories.length === 0) return;
+
     setLoading(true);
     setError("");
+
+    const categoryObj = categories.find((c) => c.slug === category);
 
     const filters: BookFilters = {
       search: search || undefined,
       category: category || undefined,
+      category_id: categoryObj?.id || undefined,
       book_type: (bookType as any) || undefined,
       sort,
       page,
-      limit: 12,
+      limit: 25,
     };
 
     catalogService
@@ -96,138 +121,136 @@ function BooksPageContent() {
         setBooks([]);
       })
       .finally(() => setLoading(false));
-  }, [search, category, bookType, sort, page]);
+  }, [search, category, bookType, sort, page, categories]);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header + Banner */}
       <div className="bg-white border-b border-gray-100">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-                {search ? `Hasil "${search}"` : "Jelajahi Buku"}
-              </h1>
-              <p className="text-gray-500">
-                {loading
-                  ? "Memuat..."
-                  : `${total.toLocaleString("id-ID")} buku ditemukan`}
-              </p>
-            </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col gap-6">
+            {search && (
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                  Hasil pencarian "{search}"
+                </h1>
+                <p className="text-gray-500">
+                  {loading ? "Memuat..." : `${total.toLocaleString("id-ID")} buku ditemukan`}
+                </p>
+              </div>
+            )}
 
-            {/* Search Bar */}
-            <SearchBar
-              defaultValue={search}
-              onSearch={(v) => updateFilter("search", v)}
-            />
+            {/* Banner Carousel */}
+            {banners.length > 0 && (
+              <div className="flex-1 relative rounded-2xl overflow-hidden group shadow-sm" style={{ minHeight: 250 }}>
+                {banners.map((banner, idx) => (
+                  <a
+                    key={banner.id}
+                    href={banner.link_url || "#"}
+                    target={banner.link_url ? "_blank" : undefined}
+                    rel="noopener noreferrer"
+                    className={`block absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                      idx === currentBanner ? "opacity-100 z-10" : "opacity-0 z-0"
+                    }`}
+                  >
+                    <img
+                      src={banner.image_url}
+                      alt={banner.title || "Promo Banner"}
+                      className="w-full h-full object-cover rounded-2xl"
+                      style={{ minHeight: 250, maxHeight: 350 }}
+                    />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl" />
+                    {banner.title && (
+                      <div className="absolute bottom-4 left-5 right-5">
+                        <p className="text-white font-bold text-lg drop-shadow-lg truncate">
+                          {banner.title}
+                        </p>
+                      </div>
+                    )}
+                  </a>
+                ))}
+
+                {/* Navigation Arrows */}
+                {banners.length > 1 && (
+                  <>
+                    <button
+                      onClick={(e) => { e.preventDefault(); setCurrentBanner((p) => (p - 1 + banners.length) % banners.length); }}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <button
+                      onClick={(e) => { e.preventDefault(); setCurrentBanner((p) => (p + 1) % banners.length); }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                  </>
+                )}
+
+                {/* Dots */}
+                {banners.length > 1 && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+                    {banners.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={(e) => { e.preventDefault(); setCurrentBanner(idx); }}
+                        className={`h-2 rounded-full transition-all ${
+                          idx === currentBanner ? "w-6 bg-white" : "w-2 bg-white/60"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-12 gap-6">
-          {/* Sidebar Filters */}
-          <aside className="lg:col-span-3">
-            <div className="bg-white rounded-2xl border border-gray-100 p-5 sticky top-20">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="font-bold text-gray-900">Filter</h2>
-                {hasActiveFilters && (
-                  <button
-                    onClick={resetFilters}
-                    className="text-xs text-teal-600 hover:text-teal-700 font-semibold"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
-
-              {/* Categories */}
-              <div className="mb-6">
-                <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
-                  Kategori
-                </h3>
-                <div className="space-y-1 max-h-72 overflow-y-auto">
-                  <button
-                    onClick={() => updateFilter("category", null)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
-                      !category
-                        ? "bg-teal-50 text-teal-700 font-semibold"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    Semua Kategori
-                  </button>
-                  {categories.length === 0 && (
-                    <p className="text-xs text-gray-400 px-3 py-2">
-                      Tidak ada kategori
-                    </p>
-                  )}
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => updateFilter("category", cat.slug)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition ${
-                        category === cat.slug
-                          ? "bg-teal-50 text-teal-700 font-semibold"
-                          : "text-gray-600 hover:bg-gray-50"
-                      }`}
-                    >
-                      <span className="truncate">{cat.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Book Type */}
-              <div className="mb-6">
-                <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
-                  Tipe Buku
-                </h3>
-                <div className="space-y-2">
-                  <FilterRadio
-                    name="book_type"
-                    value=""
-                    label="Semua"
-                    checked={!bookType}
-                    onChange={() => updateFilter("book_type", null)}
-                  />
-                  <FilterRadio
-                    name="book_type"
-                    value="new"
-                    label="Buku Baru"
-                    checked={bookType === "new"}
-                    onChange={() => updateFilter("book_type", "new")}
-                  />
-                  <FilterRadio
-                    name="book_type"
-                    value="used"
-                    label="Buku Bekas"
-                    checked={bookType === "used"}
-                    onChange={() => updateFilter("book_type", "used")}
-                  />
-                </div>
-              </div>
-
-              {/* Coming Soon */}
-              <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-500">
-                  Filter harga, kondisi, dan rating
-                </p>
-                <p className="text-xs text-gray-400 mt-0.5">Segera hadir</p>
-              </div>
-            </div>
-          </aside>
-
-          {/* Books Grid/List */}
-          <div className="lg:col-span-9">
+        <div>
+          {/* Books Section */}
+          <div className="w-full">
             {/* Toolbar */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-3 mb-4 flex items-center justify-between gap-3">
+            <div className="bg-white rounded-2xl border border-gray-100 p-3 mb-6 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-3 flex-1">
+                {!search && (
+                  <span className="text-sm font-medium text-gray-700 hidden sm:block flex-shrink-0">
+                    {loading ? "Memuat..." : `${total.toLocaleString("id-ID")} buku`}
+                  </span>
+                )}
+                
+                {/* Category Dropdown */}
+                <select
+                  value={category || ""}
+                  onChange={(e) => updateFilter("category", e.target.value)}
+                  className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent cursor-pointer"
+                >
+                  <option value="">Semua Kategori</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.slug}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Book Type Dropdown */}
+                <select
+                  value={bookType || ""}
+                  onChange={(e) => updateFilter("book_type", e.target.value)}
+                  className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent cursor-pointer"
+                >
+                  <option value="">Semua Kondisi</option>
+                  <option value="new">Buku Baru</option>
+                  <option value="used">Buku Bekas</option>
+                </select>
+              </div>
+
               {/* Sort */}
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span className="text-sm text-gray-500 hidden sm:block flex-shrink-0">
-                  Urutkan:
-                </span>
+              <div className="flex items-center gap-2">
                 <select
                   value={sort}
                   onChange={(e) => updateFilter("sort", e.target.value)}
@@ -416,16 +439,21 @@ function FilterRadio({
   onChange: () => void;
 }) {
   return (
-    <label className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition">
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-        className="w-4 h-4 text-teal-600 focus:ring-teal-500"
-      />
-      <span className="text-sm text-gray-700">{label}</span>
+    <label className="flex items-center gap-3 cursor-pointer group">
+      <div className="relative flex items-center justify-center">
+        <input
+          type="radio"
+          name={name}
+          value={value}
+          checked={checked}
+          onChange={onChange}
+          className="peer appearance-none w-4 h-4 rounded-full border-2 border-gray-300 checked:border-teal-500 checked:bg-teal-500 transition-all cursor-pointer"
+        />
+        <div className="absolute w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+      </div>
+      <span className="text-sm text-gray-700 group-hover:text-gray-900">
+        {label}
+      </span>
     </label>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/Toast";
+import { adminService } from "@/services/adminService";
 
 interface User {
   id: string;
@@ -14,35 +15,6 @@ interface User {
   created_at: string;
 }
 
-// Mock data - replace with actual API call when available
-const mockUsers: User[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    phone_number: "6281234567890",
-    role: "customer",
-    is_active: true,
-    created_at: "2026-01-15T10:00:00Z",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "seller",
-    is_active: true,
-    created_at: "2026-02-20T14:30:00Z",
-  },
-  {
-    id: "3",
-    name: "Bob Wilson",
-    phone_number: "6289876543210",
-    role: "customer",
-    is_active: false,
-    created_at: "2026-03-10T09:15:00Z",
-  },
-];
-
 export default function AdminUsersPage() {
   const toast = useToast();
   const [users, setUsers] = useState<User[]>([]);
@@ -52,11 +24,19 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setUsers(mockUsers);
-      setLoading(false);
-    }, 500);
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const data = await adminService.getUsers();
+        setUsers(data as User[]);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+        toast.error("Gagal memuat data pengguna.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
   }, []);
 
   const filteredUsers = users.filter((user) => {

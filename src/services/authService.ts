@@ -16,7 +16,7 @@ export interface VerifyOTPResponse {
   data: {
     user: {
       id: string;
-      phone_number: string;
+      phone_number?: string | null;
       email?: string;
       name: string;
       role: 'customer' | 'seller' | 'admin';

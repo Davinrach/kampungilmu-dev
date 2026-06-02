@@ -42,7 +42,7 @@ export default function SellerLayoutClient({ children }: SellerLayoutClientProps
 
   if (!hasHydrated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full"></div>
       </div>
     );
@@ -50,14 +50,14 @@ export default function SellerLayoutClient({ children }: SellerLayoutClientProps
 
   if (!isAuthenticated || user?.role !== "seller") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div

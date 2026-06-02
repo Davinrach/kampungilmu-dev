@@ -191,7 +191,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
             <img
-              src="/Logo%20Kampung%20Ilmu%20White.jpg"
+              src="/Logo_Kampung_Ilmu_White-removebg-preview.png"
               alt="Kampung Ilmu Logo"
               className="h-16 w-auto object-contain rounded-xl shadow-sm"
             />
@@ -505,147 +505,12 @@ export default function LoginPage() {
         {/* Content */}
         <div className="relative z-10 max-w-lg w-full">
           {/* Main Image Card */}
-          <div className="relative bg-gradient-to-br from-teal-200 to-cyan-300 rounded-3xl p-8 shadow-2xl aspect-square flex items-center justify-center overflow-hidden">
-            {/* Books Illustration */}
-            <div className="relative w-full h-full flex items-center justify-center">
-              <svg
-                viewBox="0 0 400 400"
-                className="w-full h-full"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* Background circle */}
-                <circle cx="200" cy="200" r="160" fill="white" opacity="0.9" />
-
-                {/* Books stack */}
-                <g transform="translate(120, 150)">
-                  {/* Book 1 */}
-                  <rect
-                    x="0"
-                    y="80"
-                    width="160"
-                    height="20"
-                    rx="2"
-                    fill="#0d9488"
-                  />
-                  <rect
-                    x="5"
-                    y="85"
-                    width="150"
-                    height="2"
-                    fill="white"
-                    opacity="0.5"
-                  />
-
-                  {/* Book 2 */}
-                  <rect
-                    x="10"
-                    y="55"
-                    width="140"
-                    height="25"
-                    rx="2"
-                    fill="#06b6d4"
-                  />
-                  <rect
-                    x="15"
-                    y="62"
-                    width="130"
-                    height="2"
-                    fill="white"
-                    opacity="0.5"
-                  />
-
-                  {/* Book 3 */}
-                  <rect
-                    x="5"
-                    y="25"
-                    width="150"
-                    height="30"
-                    rx="2"
-                    fill="#0891b2"
-                  />
-                  <rect
-                    x="10"
-                    y="35"
-                    width="140"
-                    height="2"
-                    fill="white"
-                    opacity="0.5"
-                  />
-
-                  {/* Book 4 (top) */}
-                  <rect
-                    x="20"
-                    y="0"
-                    width="120"
-                    height="25"
-                    rx="2"
-                    fill="#14b8a6"
-                  />
-                  <rect
-                    x="25"
-                    y="8"
-                    width="110"
-                    height="2"
-                    fill="white"
-                    opacity="0.5"
-                  />
-                </g>
-
-                {/* Reading person silhouette */}
-                <g transform="translate(160, 240)">
-                  <circle cx="40" cy="20" r="18" fill="#0f766e" />
-                  <path
-                    d="M 10 60 Q 10 40, 40 40 Q 70 40, 70 60 L 70 80 L 10 80 Z"
-                    fill="#0f766e"
-                  />
-                </g>
-
-                {/* Decorative dots */}
-                <circle cx="80" cy="100" r="4" fill="#14b8a6" />
-                <circle cx="320" cy="120" r="6" fill="#06b6d4" />
-                <circle cx="100" cy="320" r="5" fill="#0891b2" />
-                <circle cx="310" cy="290" r="4" fill="#14b8a6" />
-              </svg>
-            </div>
-
-            {/* Floating Card 1 - Top Right */}
-            <div className="absolute top-6 right-6 bg-white rounded-2xl px-4 py-3 shadow-xl flex items-center gap-3">
-              <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 text-teal-600"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 font-medium">Ribuan</p>
-                <p className="text-sm font-bold text-gray-900">Buku</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Floating Card 2 - Bottom */}
-          <div className="absolute -bottom-4 right-8 bg-white rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3 z-20">
-            <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-xl flex items-center justify-center">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-bold text-gray-900">Akses tak terbatas</p>
-              <p className="text-xs text-gray-500">Untuk semua user</p>
-            </div>
+          <div className="relative bg-white rounded-3xl shadow-2xl aspect-[4/3] flex items-center justify-center overflow-hidden">
+            <img
+              src="/Kampung Ilmu - Pasar Buku Baru & Bekas.jpg"
+              alt="Kampung Ilmu - Pasar Buku Baru & Bekas"
+              className="w-full h-full object-cover"
+            />
           </div>
 
           {/* Caption */}

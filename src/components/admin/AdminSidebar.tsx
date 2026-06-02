@@ -88,6 +88,16 @@ const menuItems: MenuItem[] = [
     href: "/admin/orders",
   },
   {
+    id: "banners",
+    label: "Banner Promo",
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    href: "/admin/banners",
+  },
+  {
     id: "reports",
     label: "Laporan",
     icon: (
@@ -132,7 +142,7 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
 
   return (
     <aside
-      className={`h-screen bg-gradient-to-b from-teal-800 to-teal-900 text-white transition-all duration-300 flex flex-col ${
+      className={`h-screen sticky top-0 bg-gradient-to-b from-teal-800 to-teal-900 text-white transition-all duration-300 flex flex-col ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
@@ -156,7 +166,7 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
       {!collapsed && user && (
         <div className="p-4 border-b border-teal-700">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold overflow-hidden">
+            <div className="w-10 h-10 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold overflow-hidden">
               {user.profile_photo ? (
                 <img
                   src={user.profile_photo}
@@ -186,7 +196,7 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
                   href={item.href}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                     isMenuActive(item)
-                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30"
+                      ? "bg-teal-600 text-white shadow-md shadow-teal-900/20"
                       : "text-teal-200 hover:bg-teal-800/50 hover:text-white"
                   }`}
                 >
@@ -229,15 +239,15 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
                     )}
                   </button>
                   {!collapsed && expandedMenus.includes(item.id) && item.children && (
-                    <ul className="mt-1 ml-4 pl-4 border-l border-indigo-700 space-y-1">
+                    <ul className="mt-1 ml-4 pl-4 border-l border-teal-700 space-y-1">
                       {item.children.map((child) => (
                         <li key={child.href}>
                           <Link
                             href={child.href}
                             className={`block px-3 py-2 rounded-lg text-sm transition-all ${
                               isActive(child.href.split("?")[0])
-                                ? "bg-amber-500/20 text-amber-400"
-                                : "text-indigo-300 hover:bg-indigo-800/50 hover:text-white"
+                                ? "bg-teal-700 text-teal-100"
+                                : "text-teal-300 hover:bg-teal-800/50 hover:text-white"
                             }`}
                           >
                             {child.label}
@@ -254,10 +264,10 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-indigo-700">
+      <div className="p-4 border-t border-teal-700">
         <Link
           href="/"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-indigo-300 hover:bg-indigo-800/50 hover:text-white transition-all"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-teal-300 hover:bg-teal-800/50 hover:text-white transition-all"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

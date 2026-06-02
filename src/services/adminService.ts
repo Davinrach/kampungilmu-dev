@@ -112,6 +112,27 @@ export const adminService = {
     return response.data.data;
   },
 
+  /**
+   * Get all users
+   * GET /api/v1/admin/users
+   */
+  getUsers: async (): Promise<any[]> => {
+    try {
+      const response = await api.get('/admin/users');
+      const data = response.data?.data || response.data;
+      if (Array.isArray(data)) return data;
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data.users)) return data.users;
+        const arrayValues = Object.values(data).filter(Array.isArray);
+        if (arrayValues.length > 0) return arrayValues[0] as any[];
+      }
+      return [];
+    } catch (error) {
+      console.error('[AdminService] Error fetching all users:', error);
+      throw error;
+    }
+  },
+
   // ===== SELLER MANAGEMENT =====
 
   /**

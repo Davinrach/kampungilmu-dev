@@ -112,10 +112,10 @@ export const accountService = {
    * Returns the URL that can be used in other endpoints.
    *
    * Endpoint: POST /api/v1/upload?folder=xxx
-   * Folders available: books, ktp, reviews, disputes, avatars
+   * Folders available: books, ktp, reviews, disputes, avatars, banners
    * Max size: 5MB, formats: JPG, PNG, WebP
    */
-  uploadFile: async (file: File, folder: 'books' | 'ktp' | 'reviews' | 'disputes' | 'avatars' = 'avatars'): Promise<UploadResponse> => {
+  uploadFile: async (file: File, folder: 'books' | 'ktp' | 'reviews' | 'disputes' | 'avatars' | 'banners' = 'avatars'): Promise<UploadResponse> => {
     const formData = new FormData();
     formData.append('file', file);
     

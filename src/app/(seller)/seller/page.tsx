@@ -94,14 +94,12 @@ export default function SellerDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-teal-600 to-teal-800 rounded-2xl p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold mb-1">
-              Selamat datang, {user?.name?.split(" ")[0]}! 👋
-            </h1>
-            <p className="text-slate-300">
-              Berikut ringkasan performa toko Anda hari ini
+            <h1 className="text-2xl font-bold mb-1">Dashboard Seller</h1>
+            <p className="text-teal-100">
+              Pantau performa toko dan pesanan Anda hari ini
             </p>
           </div>
           <Link
