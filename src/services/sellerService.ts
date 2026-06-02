@@ -143,8 +143,16 @@ export const sellerService = {
    * GET /api/v1/seller/books
    */
   getMyBooks: async (): Promise<SellerBook[]> => {
-    const response = await api.get<BackendResponse<SellerBook[]>>('/seller/books');
-    return response.data.data;
+    const response = await api.get('/seller/books', {
+      params: { limit: 100, per_page: 100 }
+    });
+    // Jika backend mengembalikan pagination (data.data.data), ambil array-nya
+    // Jika tidak, ambil data.data langsung
+    const responseData = response.data.data;
+    if (responseData && !Array.isArray(responseData) && Array.isArray(responseData.data)) {
+      return responseData.data;
+    }
+    return responseData || [];
   },
 
   /**

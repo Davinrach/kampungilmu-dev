@@ -103,6 +103,7 @@ function BooksPageContent() {
       sort,
       page,
       limit: 25,
+      per_page: 25,
     };
 
     catalogService
