@@ -11,7 +11,7 @@ import axios from 'axios';
  * This way, the browser never directly calls the ngrok backend,
  * eliminating CORS preflight issues entirely.
  */
-const API_URL = '/api/v1';
+const API_URL = '/backend/v1';
 
 // Create axios instance
 const api = axios.create({

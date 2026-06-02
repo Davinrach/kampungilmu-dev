@@ -12,12 +12,12 @@ const nextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
-  // Proxy /api/* requests to backend - eliminates CORS issues
-  // Browser sees same-origin requests, Next.js server forwards to ngrok backend
+  // Proxy /backend/* requests to backend - use /backend prefix to avoid
+  // conflict with Vercel's reserved /api path for serverless functions
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
+        source: "/backend/:path*",
         destination: `${BACKEND_URL}/api/:path*`,
       },
     ];
