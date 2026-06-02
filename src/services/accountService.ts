@@ -1,4 +1,5 @@
 import api from '@/lib/api';
+import axios from 'axios';
 
 // ============== INTERFACES ==============
 
@@ -46,31 +47,38 @@ export interface UploadResponse {
   };
 }
 
-export interface WalletBalance {
-  held_balance: number;
-  available_balance: number;
-  total_balance: number;
-}
 
-export interface StoreData {
+export interface SellerProfile {
   id: string;
-  store_name: string;
-  store_description: string;
-  store_address: string;
-  store_photo?: string;
+  shop_name: string;
+  shop_description?: string;
+  shop_location_desc: string;
+  ktp_photo?: string;
+  shop_photo?: string;
   latitude?: number;
   longitude?: number;
-  rating?: number;
-  total_reviews?: number;
-  total_sold?: number;
-  is_active: boolean;
+  status: 'pending' | 'approved' | 'rejected';
+  rejection_reason?: string | null;
+  average_rating: number;
+  total_sold: number;
+  created_at?: string;
 }
 
-export interface UpdateStoreData {
-  store_name?: string;
-  store_description?: string;
-  store_address?: string;
-  store_photo?: string;
+export interface SellerUpgradeData {
+  shop_name: string;
+  shop_description?: string;
+  shop_location_desc: string;
+  ktp_photo: string;
+  shop_photo?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface UpdateSellerProfileData {
+  shop_name?: string;
+  shop_description?: string;
+  shop_location_desc?: string;
+  shop_photo?: string;
   latitude?: number;
   longitude?: number;
 }
@@ -108,16 +116,30 @@ export const accountService = {
    * Folders available: books, ktp, reviews, disputes, avatars
    * Max size: 5MB, formats: JPG, PNG, WebP
    */
-  uploadFile: async (
-    file: File,
-    folder: 'books' | 'ktp' | 'reviews' | 'disputes' | 'avatars' = 'avatars'
-  ): Promise<UploadResponse> => {
+  uploadFile: async (file: File, folder: 'books' | 'ktp' | 'reviews' | 'disputes' | 'avatars' = 'avatars'): Promise<UploadResponse> => {
     const formData = new FormData();
     formData.append('file', file);
-
-    const response = await api.post(`/upload?folder=${folder}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://kampungilmu-be-production.up.railway.app";
+    
+    // Debug: Cek URL yang digunakan
+    console.log('🔗 Upload URL:', `${BACKEND_URL}/api/v1/upload?folder=${folder}`);
+    console.log('📦 Environment:', process.env.NEXT_PUBLIC_BACKEND_URL);
+    
+    const token = localStorage.getItem('access_token');
+    
+    const response = await axios.post(
+      `${BACKEND_URL}/api/v1/upload?folder=${folder}`, 
+      formData, 
+      {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Authorization': token ? `Bearer ${token}` : '',
+          'ngrok-skip-browser-warning': 'true'
+        },
+      }
+    );
+    
     return response.data;
   },
 
@@ -235,39 +257,7 @@ export const accountService = {
     return response.data;
   },
 
-  // ===== STORE (SELLER) =====
-  // Note: Endpoints to be confirmed with backend developer
 
-  getMyStore: async () => {
-    const response = await api.get('/seller/store');
-    return response.data;
-  },
-
-  updateStore: async (data: UpdateStoreData) => {
-    const response = await api.patch('/seller/store', data);
-    return response.data;
-  },
-
-  updateStoreCoordinates: async (latitude: number, longitude: number) => {
-    const response = await api.patch('/seller/store/coordinates', {
-      latitude,
-      longitude,
-    });
-    return response.data;
-  },
-
-  // ===== WALLET (SELLER) =====
-  // Note: Endpoints to be confirmed with backend developer
-
-  getWalletBalance: async (): Promise<{ data: WalletBalance }> => {
-    const response = await api.get('/seller/wallet/balance');
-    return response.data;
-  },
-
-  getWalletTransactions: async (params?: { page?: number; limit?: number }) => {
-    const response = await api.get('/seller/wallet/transactions', { params });
-    return response.data;
-  },
 
   // ===== BANK ACCOUNTS =====
 
@@ -298,6 +288,35 @@ export const accountService = {
   deleteBankAccount: async (id: string) => {
     const response = await api.delete(`/account/bank-accounts/${id}`);
     return response.data;
+  },
+
+  // ===== SELLER APPLICATION =====
+
+  /**
+   * Request upgrade to seller status.
+   * Endpoint: POST /api/v1/account/upgrade-seller
+   */
+  requestSellerUpgrade: async (data: SellerUpgradeData) => {
+    const response = await api.post('/account/upgrade-seller', data);
+    return response.data;
+  },
+
+  /**
+   * Check status of seller application.
+   * Endpoint: GET /api/v1/account/seller-profile
+   */
+  getSellerProfile: async (): Promise<SellerProfile> => {
+    const response = await api.get('/account/seller-profile');
+    return response.data.data;
+  },
+
+  /**
+   * Update seller profile
+   * Endpoint: PATCH /api/v1/account/seller-profile
+   */
+  updateSellerProfile: async (data: UpdateSellerProfileData): Promise<SellerProfile> => {
+    const response = await api.patch('/account/seller-profile', data);
+    return response.data.data;
   },
 
   // ===== LINK EMAIL/PHONE =====

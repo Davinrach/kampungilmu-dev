@@ -144,8 +144,11 @@ export interface CheckoutPayload {
 export interface CheckoutResponse {
   order: Order;
   payment: OrderPayment;
-  snap_token?: string; // Midtrans Snap token
-  payment_url?: string; // Fallback payment URL
+  snap_token?: string; // Midtrans Snap token (direct)
+  snapToken?: string; // Alternative naming
+  payment_url?: string; // Fallback payment URL (direct)
+  paymentUrl?: string; // Alternative naming
+  token?: string; // Some backends return just 'token'
 }
 
 // ============== Shipping Rates ==============
@@ -177,7 +180,10 @@ interface BackendResponse<T> {
 interface BackendListResponse<T> {
   success: boolean;
   message: string;
-  data: T[];
+  data: {
+    orders?: T[];
+    [key: string]: any;
+  } | T[];
 }
 
 // ============== Payment Method Options (UI) ==============
@@ -430,7 +436,14 @@ export const orderService = {
    */
   getOrders: async (): Promise<Order[]> => {
     const response = await api.get<BackendListResponse<Order>>('/orders');
-    return response.data.data || [];
+    const data = response.data?.data || response.data;
+    if (Array.isArray(data)) return data;
+    if (data && typeof data === 'object') {
+      if (Array.isArray(data.orders)) return data.orders;
+      const arrayValues = Object.values(data).filter(Array.isArray);
+      if (arrayValues.length > 0) return arrayValues[0];
+    }
+    return [];
   },
 
   /**

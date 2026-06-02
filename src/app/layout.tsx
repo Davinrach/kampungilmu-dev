@@ -25,22 +25,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <head>
+      <body className={inter.className} suppressHydrationWarning>
         {/* Midtrans Snap - loaded once for whole app */}
         <Script
+          id="midtrans-snap"
           src={MIDTRANS_SNAP_URL}
           data-client-key={MIDTRANS_CLIENT_KEY}
           strategy="afterInteractive"
         />
         {/* Google Identity Services for Sign-In */}
         <Script
+          id="google-identity"
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"
-          async
-          defer
         />
-      </head>
-      <body className={inter.className} suppressHydrationWarning>
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

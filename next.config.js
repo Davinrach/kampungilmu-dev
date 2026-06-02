@@ -2,7 +2,7 @@
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "https://valene-bushed-burma.ngrok-free.dev";
+  "https://kampungilmu-be-production.up.railway.app";
 
 const nextConfig = {
   reactStrictMode: true,

@@ -249,30 +249,51 @@ function CheckoutPageContent() {
 
       console.log("[Checkout] Sending payload:", payload);
       const result = await orderService.checkout(payload);
-      console.log("[Checkout] Backend response:", result);
+      console.log("[Checkout] Backend response:", JSON.stringify(result, null, 2));
 
       // Refresh cart (items consumed)
       await fetchCart();
 
-      // Get order ID
+      // Get order ID - check multiple possible locations
       const orderId =
         (result.order as any)?.id ||
         (result.order as any)?.order_id ||
-        (result.order as any)?.ID;
+        (result.order as any)?.ID ||
+        (result as any)?.id ||
+        (result as any)?.order_id;
+
+      console.log("[Checkout] Order ID:", orderId);
 
       if (orderId) {
         localStorage.setItem("last_order_id", orderId);
       }
 
       // ====== PAYMENT FLOW ======
-      // Preferred: Use Midtrans Snap popup (tripay_reference = snap_token)
-      // Fallback: Redirect to payment_url
+      // Check for snap_token in multiple possible locations
+      const snapToken = 
+        result.snap_token || 
+        (result as any).snapToken ||
+        (result.payment as any)?.snap_token ||
+        (result.payment as any)?.snapToken ||
+        (result as any).token;
 
-      if (result.snap_token) {
+      // Check for payment_url in multiple possible locations  
+      const paymentUrl = 
+        result.payment_url ||
+        (result as any).paymentUrl ||
+        result.payment?.payment_url ||
+        (result.payment as any)?.paymentUrl ||
+        (result.payment as any)?.redirect_url;
+
+      console.log("[Checkout] Snap token:", snapToken ? snapToken.substring(0, 30) + '...' : 'NOT FOUND');
+      console.log("[Checkout] Payment URL:", paymentUrl || 'NOT FOUND');
+
+      // Preferred: Use Midtrans Snap popup
+      if (snapToken) {
         toast.success("Pesanan dibuat! Membuka pembayaran...");
 
         try {
-          await openSnapPayment(result.snap_token, {
+          await openSnapPayment(snapToken, {
             onSuccess: (snapResult) => {
               console.log("[Snap] Payment success:", snapResult);
               toast.success("Pembayaran berhasil!");
@@ -300,26 +321,29 @@ function CheckoutPageContent() {
         } catch (snapErr: any) {
           console.error("[Snap] Failed to open popup:", snapErr);
           // Fallback to redirect if Snap fails
-          if (result.payment_url) {
-            window.location.href = result.payment_url;
+          if (paymentUrl) {
+            console.log("[Checkout] Falling back to payment URL redirect");
+            window.location.href = paymentUrl;
             return;
           }
-          toast.error("Gagal membuka popup pembayaran");
+          toast.error("Gagal membuka popup pembayaran: " + snapErr.message);
           if (orderId) router.push(`/orders/${orderId}`);
         }
         return;
       }
 
       // Fallback: redirect to payment URL if no snap_token
-      if (result.payment_url) {
+      if (paymentUrl) {
         toast.success("Pesanan dibuat! Mengarahkan ke pembayaran...");
+        console.log("[Checkout] Redirecting to payment URL:", paymentUrl);
         setTimeout(() => {
-          window.location.href = result.payment_url!;
+          window.location.href = paymentUrl;
         }, 800);
         return;
       }
 
       // No payment data - just go to order detail
+      console.warn("[Checkout] No snap_token or payment_url found in response");
       toast.success("Pesanan berhasil dibuat!");
       if (orderId) {
         router.push(`/orders/${orderId}`);

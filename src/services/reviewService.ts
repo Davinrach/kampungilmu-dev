@@ -35,6 +35,27 @@ export interface ReplyReviewPayload {
   reply: string;
 }
 
+export interface UpdateReviewPayload {
+  rating?: number;
+  comment?: string;
+  photo_url?: string;
+}
+
+export interface ReportReviewPayload {
+  reason: string;
+}
+
+export interface ReviewReport {
+  id: string;
+  review_id: string;
+  reporter_id: string;
+  reason: string;
+  status: 'pending' | 'reviewed';
+  admin_note?: string;
+  created_at: string;
+  resolved_at?: string;
+}
+
 interface BackendResponse<T> {
   success: boolean;
   message: string;
@@ -70,6 +91,55 @@ export const reviewService = {
    */
   replyToReview: async (reviewId: string, payload: ReplyReviewPayload): Promise<void> => {
     await api.post(`/reviews/${reviewId}/reply`, payload);
+  },
+
+  /**
+   * Update a review (Customer)
+   * PATCH /api/v1/reviews/:id
+   */
+  updateReview: async (reviewId: string, payload: UpdateReviewPayload): Promise<Review> => {
+    const response = await api.patch<BackendResponse<Review>>(`/reviews/${reviewId}`, payload);
+    return response.data.data;
+  },
+
+  /**
+   * Delete a review (Customer)
+   * DELETE /api/v1/reviews/:id
+   */
+  deleteReview: async (reviewId: string): Promise<void> => {
+    await api.delete(`/reviews/${reviewId}`);
+  },
+
+  /**
+   * Report a review
+   * POST /api/v1/reviews/:id/report
+   */
+  reportReview: async (reviewId: string, payload: ReportReviewPayload): Promise<ReviewReport> => {
+    const response = await api.post<BackendResponse<ReviewReport>>(`/reviews/${reviewId}/report`, payload);
+    return response.data.data;
+  },
+
+  // ===== ADMIN ENDPOINTS =====
+
+  /**
+   * Get list of review reports (Admin)
+   * GET /api/v1/admin/review-reports
+   */
+  getReviewReports: async (): Promise<ReviewReport[]> => {
+    const response = await api.get<BackendResponse<ReviewReport[]>>('/admin/review-reports');
+    return response.data.data;
+  },
+
+  /**
+   * Resolve a review report (Admin)
+   * POST /api/v1/admin/review-reports/:id/resolve
+   */
+  resolveReviewReport: async (reportId: string, status: 'reviewed', adminNote: string): Promise<ReviewReport> => {
+    const response = await api.post<BackendResponse<ReviewReport>>(`/admin/review-reports/${reportId}/resolve`, {
+      status,
+      admin_note: adminNote,
+    });
+    return response.data.data;
   },
 
   /**

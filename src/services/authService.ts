@@ -107,20 +107,4 @@ export const authService = {
     const response = await api.post('/auth/refresh', { refresh_token: refreshToken });
     return response.data;
   },
-
-  // Request Seller Upgrade
-  // Endpoint: POST /api/v1/account/upgrade-seller
-  // Body needs URLs (upload files first via /api/v1/upload?folder=ktp)
-  requestSellerUpgrade: async (data: {
-    shop_name: string;
-    shop_description?: string;
-    shop_location_desc: string;
-    ktp_photo: string; // URL after upload
-    shop_photo?: string; // URL after upload
-    latitude?: number;
-    longitude?: number;
-  }) => {
-    const response = await api.post('/account/upgrade-seller', data);
-    return response.data;
-  },
 };

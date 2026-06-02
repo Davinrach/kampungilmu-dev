@@ -78,12 +78,15 @@ export interface BookFilters {
 export interface BackendListResponse<T> {
   success: boolean;
   message: string;
-  data: T[];
-  meta?: {
-    page: number;
-    per_page: number;
-    total: number;
-    total_page: number;
+  data: {
+    books?: T[];
+    pagination?: {
+      current_page: number;
+      per_page: number;
+      total_items: number;
+      total_pages: number;
+    };
+    [key: string]: any;
   };
 }
 
@@ -108,12 +111,28 @@ export interface PaginatedResponse<T> {
 const normalizePaginatedResponse = <T>(
   response: BackendListResponse<T>
 ): PaginatedResponse<T> => {
+  const responseData = response.data || {};
+  
+  // Extract array from known keys or fallback to the data itself if it is an array
+  let items: T[] = [];
+  if (Array.isArray(responseData)) {
+    items = responseData;
+  } else if (responseData.books && Array.isArray(responseData.books)) {
+    items = responseData.books;
+  } else {
+    // Try to find any array property
+    const arrayValues = Object.values(responseData).filter(Array.isArray);
+    if (arrayValues.length > 0) items = arrayValues[0];
+  }
+
+  const pagination = responseData.pagination || {};
+
   return {
-    data: response.data || [],
-    total: response.meta?.total || 0,
-    page: response.meta?.page || 1,
-    limit: response.meta?.per_page || 20,
-    total_pages: response.meta?.total_page || 1,
+    data: items,
+    total: pagination.total_items || 0,
+    page: pagination.current_page || 1,
+    limit: pagination.per_page || 20,
+    total_pages: pagination.total_pages || 1,
   };
 };
 

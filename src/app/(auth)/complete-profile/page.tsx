@@ -39,8 +39,6 @@ export default function CompleteProfilePage() {
 
         if (response.data.role === "admin") {
           router.push("/admin");
-        } else if (response.data.role === "seller") {
-          router.push("/seller");
         } else {
           router.push("/");
         }
@@ -61,22 +59,11 @@ export default function CompleteProfilePage() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-200">
-            <svg
-              className="w-7 h-7 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-          </div>
-          <span className="text-2xl font-bold text-gray-900">Kampung Ilmu</span>
+          <img
+            src="/Logo%20Kampung%20Ilmu%20White.jpg"
+            alt="Kampung Ilmu Logo"
+            className="h-16 w-auto object-contain rounded-xl shadow-sm"
+          />
         </div>
 
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">

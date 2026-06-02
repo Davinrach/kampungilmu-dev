@@ -51,7 +51,7 @@ export default function BookReviews({ bookId }: BookReviewsProps) {
     );
   }
 
-  if (!data || data.total_reviews === 0) {
+  if (!data || !data.reviews || data.total_reviews === 0) {
     return (
       <div className="bg-white rounded-2xl border border-gray-100 p-5">
         <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">
@@ -82,7 +82,8 @@ export default function BookReviews({ bookId }: BookReviewsProps) {
     );
   }
 
-  const displayedReviews = showAll ? data.reviews : data.reviews.slice(0, 3);
+  const reviews = data.reviews || [];
+  const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-5">
@@ -118,11 +119,11 @@ export default function BookReviews({ bookId }: BookReviewsProps) {
           </div>
         </div>
         <div className="flex-1">
-          <RatingBar rating={5} count={countByRating(data.reviews, 5)} total={data.total_reviews} />
-          <RatingBar rating={4} count={countByRating(data.reviews, 4)} total={data.total_reviews} />
-          <RatingBar rating={3} count={countByRating(data.reviews, 3)} total={data.total_reviews} />
-          <RatingBar rating={2} count={countByRating(data.reviews, 2)} total={data.total_reviews} />
-          <RatingBar rating={1} count={countByRating(data.reviews, 1)} total={data.total_reviews} />
+          <RatingBar rating={5} count={countByRating(reviews, 5)} total={data.total_reviews} />
+          <RatingBar rating={4} count={countByRating(reviews, 4)} total={data.total_reviews} />
+          <RatingBar rating={3} count={countByRating(reviews, 3)} total={data.total_reviews} />
+          <RatingBar rating={2} count={countByRating(reviews, 2)} total={data.total_reviews} />
+          <RatingBar rating={1} count={countByRating(reviews, 1)} total={data.total_reviews} />
         </div>
       </div>
 
@@ -134,7 +135,7 @@ export default function BookReviews({ bookId }: BookReviewsProps) {
       </div>
 
       {/* Show More Button */}
-      {data.reviews.length > 3 && (
+      {reviews.length > 3 && (
         <button
           onClick={() => setShowAll(!showAll)}
           className="w-full mt-4 py-2.5 text-sm font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded-xl transition"

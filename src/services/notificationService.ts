@@ -22,6 +22,15 @@ export interface NotificationData {
   [key: string]: string | undefined;
 }
 
+export interface NotificationPreferences {
+  push_enabled: boolean;
+  in_app_enabled: boolean;
+  whatsapp_enabled: boolean;
+  transaction_notif: boolean;
+  chat_notif: boolean;
+  promo_notif: boolean;
+}
+
 interface BackendResponse<T> {
   success: boolean;
   message: string;
@@ -69,8 +78,15 @@ export const notificationService = {
    * GET /api/v1/notifications
    */
   getNotifications: async (): Promise<Notification[]> => {
-    const response = await api.get<BackendResponse<Notification[]>>('/notifications');
-    return response.data.data || [];
+    const response = await api.get<BackendResponse<any>>('/notifications');
+    const data = response.data?.data || response.data;
+    if (Array.isArray(data)) return data;
+    if (data && typeof data === 'object') {
+      if (Array.isArray(data.notifications)) return data.notifications;
+      const arrayValues = Object.values(data).filter(Array.isArray);
+      if (arrayValues.length > 0) return arrayValues[0];
+    }
+    return [];
   },
 
   /**
@@ -98,6 +114,24 @@ export const notificationService = {
    */
   markAllAsRead: async (): Promise<void> => {
     await api.patch('/notifications/read-all');
+  },
+
+  /**
+   * Get notification preferences
+   * GET /api/v1/notifications/preferences
+   */
+  getPreferences: async (): Promise<NotificationPreferences> => {
+    const response = await api.get<BackendResponse<NotificationPreferences>>('/notifications/preferences');
+    return response.data.data;
+  },
+
+  /**
+   * Update notification preferences
+   * PATCH /api/v1/notifications/preferences
+   */
+  updatePreferences: async (preferences: Partial<NotificationPreferences>): Promise<NotificationPreferences> => {
+    const response = await api.patch<BackendResponse<NotificationPreferences>>('/notifications/preferences', preferences);
+    return response.data.data;
   },
 };
 

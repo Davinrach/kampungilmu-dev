@@ -47,6 +47,37 @@ export interface Category {
   created_at?: string;
 }
 
+export interface AdminTransaction {
+  id: string;
+  order_number: string;
+  customer_name: string;
+  seller_name: string;
+  grand_total: number;
+  status: string;
+  payment_method: string;
+  created_at: string;
+}
+
+export interface AdminTransactionsResponse {
+  transactions: AdminTransaction[];
+  pagination: {
+    current_page: number;
+    per_page: number;
+    total_items: number;
+    total_pages: number;
+  };
+}
+
+export interface AdminReport {
+  period: 'daily' | 'weekly' | 'monthly';
+  total_revenue: number;
+  total_orders: number;
+  total_new_users: number;
+  total_new_sellers: number;
+  top_categories: { name: string; total_sold: number }[];
+  top_sellers: { shop_name: string; total_revenue: number }[];
+}
+
 // ============== SERVICE ==============
 
 export const adminService = {
@@ -59,6 +90,28 @@ export const adminService = {
     return response.data.data;
   },
 
+  /**
+   * Get all transactions for monitoring
+   * GET /api/v1/admin/transactions
+   */
+  getTransactions: async (params?: {
+    status?: string;
+    page?: number;
+    per_page?: number;
+  }): Promise<AdminTransactionsResponse> => {
+    const response = await api.get('/admin/transactions', { params });
+    return response.data.data;
+  },
+
+  /**
+   * Get system report based on period
+   * GET /api/v1/admin/reports
+   */
+  getReports: async (period: 'daily' | 'weekly' | 'monthly'): Promise<AdminReport> => {
+    const response = await api.get('/admin/reports', { params: { period } });
+    return response.data.data;
+  },
+
   // ===== SELLER MANAGEMENT =====
 
   /**
@@ -66,8 +119,21 @@ export const adminService = {
    * GET /api/v1/admin/sellers/pending
    */
   getPendingSellers: async (): Promise<PendingSeller[]> => {
-    const response = await api.get('/admin/sellers/pending');
-    return response.data.data || [];
+    try {
+      const response = await api.get('/admin/sellers/pending');
+      console.log("[DEBUG] API Response for pending sellers:", response.data);
+      const data = response.data?.data || response.data;
+      if (Array.isArray(data)) return data;
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data.sellers)) return data.sellers;
+        const arrayValues = Object.values(data).filter(Array.isArray);
+        if (arrayValues.length > 0) return arrayValues[0];
+      }
+      return [];
+    } catch (error) {
+      console.error("[DEBUG] API Error for pending sellers:", error);
+      throw error;
+    }
   },
 
   /**

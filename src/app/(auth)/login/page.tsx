@@ -19,7 +19,7 @@ const phoneSchema = z.object({
   phone: z
     .string()
     .min(10, "Nomor HP minimal 10 digit")
-    .regex(/^62\d{9,13}$/, "Format: 62xxx (contoh: 6281234567890)"),
+    .regex(/^(0|62)\d{9,13}$/, "Format: 08xxx atau 628xxx (contoh: 081234567890)"),
 });
 
 const otpSchema = z.object({
@@ -56,8 +56,6 @@ export default function LoginPage() {
           router.push("/complete-profile");
         } else if (user.role === "admin") {
           router.push("/admin");
-        } else if (user.role === "seller") {
-          router.push("/seller");
         } else {
           router.push("/");
         }
@@ -122,10 +120,13 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
+    // Format phone to use 62 instead of 0 for backend
+    const formattedPhone = data.phone.startsWith("0") ? "62" + data.phone.slice(1) : data.phone;
+
     try {
-      const response = await authService.requestOTP(data.phone);
+      const response = await authService.requestOTP(formattedPhone);
       if (response.success) {
-        setPhone(data.phone);
+        setPhone(formattedPhone);
         setStep("otp");
         startCountdown();
       }
@@ -150,8 +151,6 @@ export default function LoginPage() {
           router.push("/complete-profile");
         } else if (user.role === "admin") {
           router.push("/admin");
-        } else if (user.role === "seller") {
-          router.push("/seller");
         } else {
           router.push("/");
         }
@@ -191,22 +190,11 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-200">
-              <svg
-                className="w-7 h-7 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                />
-              </svg>
-            </div>
-            <span className="text-2xl font-bold text-gray-900">Kampung Ilmu</span>
+            <img
+              src="/Logo%20Kampung%20Ilmu%20White.jpg"
+              alt="Kampung Ilmu Logo"
+              className="h-16 w-auto object-contain rounded-xl shadow-sm"
+            />
           </div>
 
           {/* Header */}
@@ -269,7 +257,7 @@ export default function LoginPage() {
                   <input
                     {...phoneForm.register("phone")}
                     type="tel"
-                    placeholder="6281234567890"
+                    placeholder="081234567890"
                     className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent focus:bg-white transition-all text-gray-900 placeholder-gray-400"
                   />
                 </div>
@@ -279,7 +267,7 @@ export default function LoginPage() {
                   </p>
                 )}
                 <p className="mt-2 text-xs text-gray-500 ml-1">
-                  Format: 62xxx (contoh: 6281234567890)
+                  Format: 08xxx atau 628xxx (contoh: 081234567890)
                 </p>
               </div>
 

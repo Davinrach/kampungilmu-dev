@@ -66,6 +66,36 @@ export interface UpdateBookPayload {
   condition_grade?: string;
 }
 
+export interface SellerDashboardStats {
+  total_revenue: number;
+  total_orders: number;
+  total_products: number;
+  pending_orders: number;
+  balance_available: number;
+  balance_held: number;
+  today_orders: number;
+  today_revenue: number;
+}
+
+export interface SalesChartData {
+  period: 'daily' | 'weekly' | 'monthly';
+  chart: {
+    date: string;
+    revenue: number;
+    orders: number;
+  }[];
+}
+
+export interface SellerPerformance {
+  rating_avg: number;
+  total_reviews: number;
+  response_rate: number;
+  avg_response_time_minutes: number;
+  order_completion_rate: number;
+  total_sold: number;
+  repeat_customer_rate: number;
+}
+
 interface BackendResponse<T> {
   success: boolean;
   message: string;
@@ -75,6 +105,39 @@ interface BackendResponse<T> {
 // ============== SERVICE ==============
 
 export const sellerService = {
+  // ===== DASHBOARD =====
+
+  /**
+   * Get seller dashboard stats
+   * GET /api/v1/seller/dashboard
+   */
+  getDashboardStats: async (): Promise<SellerDashboardStats> => {
+    const response = await api.get<BackendResponse<SellerDashboardStats>>('/seller/dashboard');
+    return response.data.data;
+  },
+
+  /**
+   * Get sales chart data
+   * GET /api/v1/seller/dashboard/sales-chart
+   */
+  getSalesChart: async (period: 'daily' | 'weekly' | 'monthly'): Promise<SalesChartData> => {
+    const response = await api.get<BackendResponse<SalesChartData>>('/seller/dashboard/sales-chart', {
+      params: { period },
+    });
+    return response.data.data;
+  },
+
+  /**
+   * Get seller performance data
+   * GET /api/v1/seller/dashboard/performance
+   */
+  getPerformance: async (): Promise<SellerPerformance> => {
+    const response = await api.get<BackendResponse<SellerPerformance>>('/seller/dashboard/performance');
+    return response.data.data;
+  },
+
+  // ===== BOOKS =====
+
   /**
    * Get all books owned by the seller
    * GET /api/v1/seller/books

@@ -30,7 +30,10 @@ interface BackendResponse<T> {
 interface BackendListResponse<T> {
   success: boolean;
   message: string;
-  data: T[];
+  data: {
+    messages?: T[];
+    [key: string]: any;
+  } | T[];
 }
 
 interface UploadResponse {
@@ -60,7 +63,13 @@ export const chatService = {
    */
   getRooms: async (): Promise<ChatRoom[]> => {
     const response = await api.get<BackendListResponse<ChatRoom>>('/chat/rooms');
-    return response.data.data || [];
+    const data = response.data?.data || response.data;
+    if (Array.isArray(data)) return data;
+    if (data && typeof data === 'object') {
+      const arrayValues = Object.values(data).filter(Array.isArray);
+      if (arrayValues.length > 0) return arrayValues[0];
+    }
+    return [];
   },
 
   /**
@@ -71,7 +80,14 @@ export const chatService = {
     const response = await api.get<BackendListResponse<ChatMessage>>(
       `/chat/rooms/${roomId}/messages`
     );
-    return response.data.data || [];
+    const data = response.data?.data || response.data;
+    if (Array.isArray(data)) return data;
+    if (data && typeof data === 'object') {
+      if (Array.isArray(data.messages)) return data.messages;
+      const arrayValues = Object.values(data).filter(Array.isArray);
+      if (arrayValues.length > 0) return arrayValues[0];
+    }
+    return [];
   },
 
   /**
@@ -97,7 +113,7 @@ export const chatService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await api.post<UploadResponse>('/upload', formData, {
+    const response = await api.post<UploadResponse>('/upload?folder=avatars', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
