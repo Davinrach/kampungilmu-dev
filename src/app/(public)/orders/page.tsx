@@ -52,11 +52,23 @@ export default function OrdersListPage() {
     orderService
       .getOrders()
       .then((data) => {
-        // Filter by status if needed (backend may not support status query yet)
+        // Filter by status if needed
         const filtered =
           activeStatus === "all"
             ? data
-            : data.filter((o) => o.status === activeStatus);
+            : data.filter((o) => {
+                const s = o.status.toLowerCase();
+                if (activeStatus === "paid") {
+                  return s === "paid" || s === "settlement" || s === "capture" || s === "success";
+                }
+                if (activeStatus === "pending_payment") {
+                  return s === "pending_payment" || s === "pending";
+                }
+                if (activeStatus === "cancelled") {
+                  return s === "cancelled" || s === "cancel" || s === "deny" || s === "expire";
+                }
+                return s === activeStatus;
+              });
         setOrders(filtered);
       })
       .catch((err) => {

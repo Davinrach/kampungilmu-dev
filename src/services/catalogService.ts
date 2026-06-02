@@ -142,11 +142,16 @@ const normalizePaginatedResponse = <T>(
   };
 };
 
-// Build query params for backend (use backend's param names)
 const buildQueryParams = (filters: BookFilters): Record<string, any> => {
   const params: Record<string, any> = {};
-  // Backend uses 'keyword' for search query (verified via API probe)
-  if (filters.search) params.keyword = filters.search;
+  
+  if (filters.search) {
+    params.keyword = filters.search;
+    params.search = filters.search;
+    params.q = filters.search;
+    params.title = filters.search;
+  }
+  
   if (filters.category) params.category = filters.category;
   if (filters.category_id) params.category_id = filters.category_id;
   if (filters.book_type) params.book_type = filters.book_type;

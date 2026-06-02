@@ -585,7 +585,7 @@ function CheckoutPageContent() {
 
             {/* 6. Payment Method (Midtrans) */}
             <SectionCard title="Metode Pembayaran" icon="card">
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 {MIDTRANS_PAYMENT_METHODS.map((method) => (
                   <PaymentMethodCard
                     key={method.channel ? `${method.code}-${method.channel}` : method.code}
@@ -597,7 +597,7 @@ function CheckoutPageContent() {
                     }}
                   />
                 ))}
-              </div>
+              </div> */}
 
               <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
                 <p className="text-xs text-blue-800 flex items-start gap-2">

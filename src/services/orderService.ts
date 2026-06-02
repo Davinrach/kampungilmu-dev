@@ -584,32 +584,46 @@ export const orderService = {
 
 // ============== UI HELPERS ==============
 
-export const getOrderStatusLabel = (status: OrderStatus): string => {
-  const labels: Record<OrderStatus, string> = {
+export const getOrderStatusLabel = (status: OrderStatus | string): string => {
+  const labels: Record<string, string> = {
     pending_payment: 'Menunggu Pembayaran',
+    pending: 'Menunggu Pembayaran',
     paid: 'Sudah Dibayar',
+    settlement: 'Sudah Dibayar',
+    capture: 'Sudah Dibayar',
+    success: 'Sudah Dibayar',
     confirmed: 'Dikonfirmasi Seller',
     shipped: 'Sedang Dikirim',
     delivered: 'Sampai Tujuan',
     verified_pickup: 'Pickup Terverifikasi',
     completed: 'Selesai',
     cancelled: 'Dibatalkan',
+    deny: 'Dibatalkan',
+    expire: 'Kedaluwarsa',
+    cancel: 'Dibatalkan',
   };
-  return labels[status] || status;
+  return labels[status.toLowerCase()] || status;
 };
 
-export const getOrderStatusColor = (status: OrderStatus): string => {
-  const colors: Record<OrderStatus, string> = {
-    pending_payment: 'bg-yellow-100 text-yellow-700',
-    paid: 'bg-blue-100 text-blue-700',
-    confirmed: 'bg-indigo-100 text-indigo-700',
-    shipped: 'bg-purple-100 text-purple-700',
-    delivered: 'bg-teal-100 text-teal-700',
-    verified_pickup: 'bg-cyan-100 text-cyan-700',
-    completed: 'bg-green-100 text-green-700',
-    cancelled: 'bg-gray-100 text-gray-700',
+export const getOrderStatusColor = (status: OrderStatus | string): string => {
+  const colors: Record<string, string> = {
+    pending_payment: 'bg-yellow-100 text-yellow-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    paid: 'bg-green-100 text-green-800',
+    settlement: 'bg-green-100 text-green-800',
+    capture: 'bg-green-100 text-green-800',
+    success: 'bg-green-100 text-green-800',
+    confirmed: 'bg-blue-100 text-blue-800',
+    shipped: 'bg-indigo-100 text-indigo-800',
+    delivered: 'bg-teal-100 text-teal-800',
+    verified_pickup: 'bg-teal-100 text-teal-800',
+    completed: 'bg-gray-100 text-gray-800',
+    cancelled: 'bg-red-100 text-red-800',
+    deny: 'bg-red-100 text-red-800',
+    expire: 'bg-red-100 text-red-800',
+    cancel: 'bg-red-100 text-red-800',
   };
-  return colors[status] || 'bg-gray-100 text-gray-700';
+  return colors[status.toLowerCase()] || 'bg-gray-100 text-gray-800';
 };
 
 export const formatPaymentMethodLabel = (
