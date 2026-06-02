@@ -52,6 +52,7 @@ export default function OrdersListPage() {
     orderService
       .getOrders()
       .then((data) => {
+        console.log("[DEBUG] All orders from backend:", data);
         // Filter by status if needed
         const filtered =
           activeStatus === "all"

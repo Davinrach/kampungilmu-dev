@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-4">
               <img
-                src="/Logo%20Kampung%20Ilmu%20White.jpg"
+                src="/Logo_Kampung_Ilmu_White-removebg-preview.png"
                 alt="Kampung Ilmu Logo"
                 className="h-14 w-auto object-contain rounded-xl"
               />

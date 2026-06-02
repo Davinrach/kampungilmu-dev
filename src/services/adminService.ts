@@ -115,6 +115,27 @@ export const adminService = {
   // ===== SELLER MANAGEMENT =====
 
   /**
+   * Get all sellers
+   * GET /api/v1/admin/sellers
+   */
+  getAllSellers: async (): Promise<any[]> => {
+    try {
+      const response = await api.get('/admin/sellers');
+      const data = response.data?.data || response.data;
+      if (Array.isArray(data)) return data;
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data.sellers)) return data.sellers;
+        const arrayValues = Object.values(data).filter(Array.isArray);
+        if (arrayValues.length > 0) return arrayValues[0] as any[];
+      }
+      return [];
+    } catch (error) {
+      console.error('[AdminService] Error fetching all sellers:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Get list of pending seller applications
    * GET /api/v1/admin/sellers/pending
    */

@@ -436,6 +436,7 @@ export const orderService = {
    */
   getOrders: async (): Promise<Order[]> => {
     const response = await api.get<BackendListResponse<Order>>('/orders');
+    console.log("[DEBUG] Raw GET /orders response:", response.data);
     const data = response.data?.data || response.data;
     if (Array.isArray(data)) return data;
     if (data && typeof data === 'object') {

@@ -13,7 +13,7 @@ import NotificationDropdown from "@/components/notifications/NotificationDropdow
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated, hasHydrated, logout } = useAuthStore();
+  const { user, isAuthenticated, hasHydrated, logout, refreshProfile } = useAuthStore();
   const { totalItems: cartCount, fetchCart, reset: resetCart } = useCartStore();
   const { fetchUnreadCount, reset: resetNotifications } = useNotificationStore();
   const { totalUnreadCount: chatUnreadCount, fetchTotalUnreadCount, reset: resetChat } = useChatStore();
@@ -36,6 +36,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!hasHydrated) return;
     if (isAuthenticated) {
+      refreshProfile(); // Sync profile data (like role changes after approval) with backend
       fetchCart();
       fetchUnreadCount();
       fetchTotalUnreadCount();
@@ -51,7 +52,7 @@ export default function Navbar() {
       resetNotifications();
       resetChat();
     }
-  }, [hasHydrated, isAuthenticated, fetchCart, resetCart, fetchUnreadCount, resetNotifications, fetchTotalUnreadCount, resetChat]);
+  }, [hasHydrated, isAuthenticated, fetchCart, resetCart, fetchUnreadCount, resetNotifications, fetchTotalUnreadCount, resetChat, refreshProfile]);
 
   const handleLogout = () => {
     logout();
@@ -80,7 +81,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5">
             <img
-              src="/Logo%20Kampung%20Ilmu%20White.jpg"
+              src="/Logo_Kampung_Ilmu_White-removebg-preview.png"
               alt="Kampung Ilmu Logo"
               className="h-12 w-auto object-contain rounded-xl shadow-sm"
             />

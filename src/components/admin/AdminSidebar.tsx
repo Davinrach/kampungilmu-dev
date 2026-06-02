@@ -132,15 +132,15 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
 
   return (
     <aside
-      className={`bg-gradient-to-b from-indigo-900 to-purple-900 text-white transition-all duration-300 flex flex-col ${
+      className={`bg-gradient-to-b from-teal-800 to-teal-900 text-white transition-all duration-300 flex flex-col ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
       {/* Logo */}
-      <div className="p-4 border-b border-indigo-700">
+      <div className="p-4 border-b border-teal-700">
         <Link href="/admin" className="flex items-center gap-3">
           <img
-            src="/Logo%20Kampung%20Ilmu%20White.jpg"
+            src="/Logo%20Kampung%20Ilmu%20nobg.png"
             alt="Kampung Ilmu Logo"
             className="h-12 w-auto object-contain rounded-xl shadow-sm"
           />
@@ -154,7 +154,7 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
 
       {/* User Info */}
       {!collapsed && user && (
-        <div className="p-4 border-b border-indigo-700">
+        <div className="p-4 border-b border-teal-700">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold overflow-hidden">
               {user.profile_photo ? (
@@ -169,7 +169,7 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm truncate">{user.name}</p>
-              <p className="text-xs text-indigo-300 truncate">Administrator</p>
+              <p className="text-xs text-teal-300 truncate">Administrator</p>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                     isMenuActive(item)
                       ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30"
-                      : "text-indigo-200 hover:bg-indigo-800/50 hover:text-white"
+                      : "text-teal-200 hover:bg-teal-800/50 hover:text-white"
                   }`}
                 >
                   {item.icon}
@@ -200,8 +200,8 @@ export default function AdminSidebar({ collapsed = false, onToggle }: AdminSideb
                     onClick={() => toggleMenu(item.id)}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                       isMenuActive(item)
-                        ? "bg-indigo-800/70 text-white"
-                        : "text-indigo-200 hover:bg-indigo-800/50 hover:text-white"
+                        ? "bg-teal-800/70 text-white"
+                        : "text-teal-200 hover:bg-teal-800/50 hover:text-white"
                     }`}
                   >
                     {item.icon}

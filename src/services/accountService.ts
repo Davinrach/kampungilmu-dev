@@ -1,5 +1,4 @@
 import api from '@/lib/api';
-import axios from 'axios';
 
 // ============== INTERFACES ==============
 
@@ -120,22 +119,13 @@ export const accountService = {
     const formData = new FormData();
     formData.append('file', file);
     
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://kampungilmu-be-production.up.railway.app";
-    
-    // Debug: Cek URL yang digunakan
-    console.log('🔗 Upload URL:', `${BACKEND_URL}/api/v1/upload?folder=${folder}`);
-    console.log('📦 Environment:', process.env.NEXT_PUBLIC_BACKEND_URL);
-    
-    const token = localStorage.getItem('access_token');
-    
-    const response = await axios.post(
-      `${BACKEND_URL}/api/v1/upload?folder=${folder}`, 
+    // Use the api instance (which goes through Next.js proxy) to avoid CORS issues
+    const response = await api.post(
+      `/upload?folder=${folder}`, 
       formData, 
       {
         headers: { 
           'Content-Type': 'multipart/form-data',
-          'Authorization': token ? `Bearer ${token}` : '',
-          'ngrok-skip-browser-warning': 'true'
         },
       }
     );

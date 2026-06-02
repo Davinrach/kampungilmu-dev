@@ -142,7 +142,7 @@ export default function SellerSidebar({ collapsed = false, onToggle }: SellerSid
       <div className="p-4 border-b border-slate-700">
         <Link href="/seller" className="flex items-center gap-3">
           <img
-            src="/Logo%20Kampung%20Ilmu%20White.jpg"
+            src="/Logo%20Kampung%20Ilmu%20nobg.png"
             alt="Kampung Ilmu Logo"
             className="h-12 w-auto object-contain rounded-xl shadow-sm"
           />
