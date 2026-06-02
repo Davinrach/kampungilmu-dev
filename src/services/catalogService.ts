@@ -331,8 +331,10 @@ export const catalogService = {
 
 // ============== UI HELPERS ==============
 
-export const formatPrice = (price: number | null | undefined): string => {
-  const value = typeof price === "number" && !isNaN(price) ? price : 0;
+export const formatPrice = (price: number | string | null | undefined): string => {
+  let value = 0;
+  if (typeof price === "number" && !isNaN(price)) value = price;
+  else if (typeof price === "string" && !isNaN(Number(price))) value = Number(price);
   return `Rp ${value.toLocaleString("id-ID")}`;
 };
 

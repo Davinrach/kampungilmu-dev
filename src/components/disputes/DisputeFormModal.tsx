@@ -91,17 +91,23 @@ export default function DisputeFormModal({
     e.preventDefault();
 
     if (!type) {
-      setError("Pilih jenis masalah");
+      const msg = "Pilih jenis masalah terlebih dahulu";
+      setError(msg);
+      toast.warning(msg);
       return;
     }
 
     if (!reason.trim()) {
-      setError("Jelaskan masalah yang Anda alami");
+      const msg = "Jelaskan masalah yang Anda alami";
+      setError(msg);
+      toast.warning(msg);
       return;
     }
 
-    if (reason.trim().length < 20) {
-      setError("Penjelasan minimal 20 karakter");
+    if (reason.trim().length < 10) {
+      const msg = "Penjelasan minimal 10 karakter";
+      setError(msg);
+      toast.warning(msg);
       return;
     }
 

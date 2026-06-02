@@ -99,8 +99,23 @@ export const disputeService = {
    * POST /api/v1/disputes
    */
   createDispute: async (payload: CreateDisputePayload): Promise<Dispute> => {
-    const response = await api.post<BackendResponse<Dispute>>('/disputes', payload);
-    return response.data.data;
+    // MOCK SUBMISSION (Since API /disputes doesn't exist yet)
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          id: `dispute-${Date.now()}`,
+          order_id: payload.order_id,
+          customer_id: "mock-customer-id",
+          customer_name: "Mock Customer",
+          seller_id: payload.seller_id,
+          seller_name: "Mock Seller",
+          type: payload.type,
+          reason: payload.reason,
+          status: 'open',
+          created_at: new Date().toISOString()
+        });
+      }, 1000);
+    });
   },
 
   /**
@@ -108,8 +123,24 @@ export const disputeService = {
    * GET /api/v1/disputes/:id
    */
   getDispute: async (disputeId: string): Promise<Dispute> => {
-    const response = await api.get<BackendResponse<Dispute>>(`/disputes/${disputeId}`);
-    return response.data.data;
+    // MOCK DATA
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+            id: disputeId,
+            order_id: "order-mock-1",
+            order_number: "KI-MOCK-123",
+            customer_id: "cust-1",
+            customer_name: "Budi Pembeli",
+            seller_id: "seller-1",
+            seller_name: "Toko Buku Mock",
+            type: "damaged",
+            reason: "Buku yang saya terima ada beberapa halaman yang sobek dan basah karena hujan.",
+            status: "open",
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+        });
+      }, 500);
+    });
   },
 
   /**
@@ -117,8 +148,26 @@ export const disputeService = {
    * GET /api/v1/disputes
    */
   getMyDisputes: async (): Promise<Dispute[]> => {
-    const response = await api.get<BackendResponse<Dispute[]>>('/disputes');
-    return response.data.data || [];
+    // MOCK DATA (Since API doesn't exist yet)
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([
+          {
+            id: "dispute-mock-1",
+            order_id: "order-mock-1",
+            order_number: "KI-MOCK-123",
+            customer_id: "cust-1",
+            customer_name: "Budi Pembeli",
+            seller_id: "seller-1",
+            seller_name: "Toko Buku Mock",
+            type: "damaged",
+            reason: "Buku yang saya terima ada beberapa halaman yang sobek dan basah karena hujan.",
+            status: "open",
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+          }
+        ]);
+      }, 800);
+    });
   },
 
   /**
@@ -126,8 +175,26 @@ export const disputeService = {
    * GET /api/v1/seller/disputes (or /disputes with seller role)
    */
   getSellerDisputes: async (): Promise<Dispute[]> => {
-    const response = await api.get<BackendResponse<Dispute[]>>('/seller/disputes');
-    return response.data.data || [];
+    // MOCK DATA (Since API doesn't exist yet)
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([
+          {
+            id: "dispute-mock-1",
+            order_id: "order-mock-1",
+            order_number: "KI-MOCK-123",
+            customer_id: "cust-1",
+            customer_name: "Budi Pembeli",
+            seller_id: "seller-1",
+            seller_name: "Toko Buku Mock",
+            type: "damaged",
+            reason: "Buku yang saya terima ada beberapa halaman yang sobek dan basah karena hujan.",
+            status: "open",
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+          }
+        ]);
+      }, 800);
+    });
   },
 
   /**
@@ -138,11 +205,26 @@ export const disputeService = {
     disputeId: string,
     payload: RespondDisputePayload
   ): Promise<Dispute> => {
-    const response = await api.post<BackendResponse<Dispute>>(
-      `/disputes/${disputeId}/respond`,
-      payload
-    );
-    return response.data.data;
+    // MOCK SUBMISSION
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+            id: disputeId,
+            order_id: "order-mock-1",
+            order_number: "KI-MOCK-123",
+            customer_id: "cust-1",
+            customer_name: "Budi Pembeli",
+            seller_id: "seller-1",
+            seller_name: "Toko Buku Mock",
+            type: "damaged",
+            reason: "Buku yang saya terima ada beberapa halaman yang sobek dan basah karena hujan.",
+            seller_response: payload.response,
+            status: "responded",
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+            updated_at: new Date().toISOString()
+        });
+      }, 1000);
+    });
   },
 
   /**

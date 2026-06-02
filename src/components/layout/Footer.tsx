@@ -9,10 +9,11 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-4">
               <img
-                src="/Logo_Kampung_Ilmu_White-removebg-preview.png"
+                src="/Logo Kampung Ilmu nobg.png"
                 alt="Kampung Ilmu Logo"
-                className="h-14 w-auto object-contain rounded-xl"
+                className="h-10 w-auto object-contain"
               />
+              <span className="text-xl font-bold text-white tracking-tight">Kampung Ilmu</span>
             </Link>
             <p className="text-sm text-gray-400 mb-4">
               Marketplace buku terlengkap untuk pembaca dan kolektor di seluruh
